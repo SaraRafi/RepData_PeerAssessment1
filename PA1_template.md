@@ -13,8 +13,8 @@ The data is loaded from the working directory into a dataframe called **assignme
 2. date : The date on which the measurement was taken in YYYY-MM-DD format
 3. interval :  Identifier for the 5-minute interval in which measurement was taken
 
-```{r}
 
+```r
 assignment<-read.csv("activity.csv")
 ```
 
@@ -26,9 +26,9 @@ assignment<-read.csv("activity.csv")
 
 The total number of steps per each day is calculted by using the aggregate command. This is shown in the code below. 
 
-```{r}
-steps_total<-aggregate(list(steps_total=assignment$steps), by=list(date=assignment$date),  FUN=sum, na.rm=TRUE)
 
+```r
+steps_total<-aggregate(list(steps_total=assignment$steps), by=list(date=assignment$date),  FUN=sum, na.rm=TRUE)
 ```
 
 The result is saved in a new data frame called **steps_total**.This data frame contains the total number of steps for each of the 61 days for which the analysis is being carried out. The observation that are NA are excluded from the total using the na.rm=TRUE argument.
@@ -39,20 +39,34 @@ The result is saved in a new data frame called **steps_total**.This data frame c
 
 A histrogram is a graphical representation of distribution of data.  The  histogram below illustrates the frequency of total number of steps in a day. In the sample data, a higher proportion of the total number of steps in a day are about 10000 to 15000 steps.  
 
-```{r}
-hist(steps_total$steps_total, col="dark red" ,main= "Total number of steps per day", xlab="Number of Steps")
 
+```r
+hist(steps_total$steps_total, col="dark red" ,main= "Total number of steps per day", xlab="Number of Steps")
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
-```{r}
+
+
+```r
 mean_steps=mean(steps_total$steps)
 median_steps=median(steps_total$steps)
 mean_steps
+```
+
+```
+## [1] 9354.23
+```
+
+```r
 median_steps
 ```
 
-The mean nember of total steps is equal to `r mean_steps` and the median is `r median_steps`. 
+```
+## [1] 10395
+```
+
+The mean nember of total steps is equal to 9354.2295082 and the median is 10395. 
 
 
 ##PART 3: Average Daily Activity Pattern
@@ -64,35 +78,43 @@ The data is collected for 5 minute intervals. The code below calculates the mean
 A plot of the average steps against the 5 minute interval below, shows that the mean number of steps is very low in the initial intervals. There is an increase after the 500 interval, and starts decreasing after the 2000 interval.
 
 
-```{r}
+
+```r
 steps_mean_interval<-aggregate(list(steps_mean=assignment$steps), by=list(interval=assignment$interval),  FUN=mean, na.rm=TRUE)
 
 
 plot(steps_mean_interval$interval, steps_mean_interval$steps_mean, type="l",lwd=5, col="green", xlab="5 mins interval", ylab="Average steps" ,main="Average Daily Activity")
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
 
 ### *Maximum Steps*
 
-```{r}
+
+```r
 max_steps<-max(steps_mean_interval$steps_mean)
 max_row<-which.max(steps_mean_interval$steps_mean)
 steps_mean_interval[max_row, "interval"]
-
 ```
 
-The maximum number of mean steps in a 5 minute interval is `r max_steps` which occurs when the interval value is 835.  
+```
+## [1] 835
+```
+
+The maximum number of mean steps in a 5 minute interval is 206.1698113 which occurs when the interval value is 835.  
 
 ##PART 4: Imputing Missing Values
 
 
 ###*Total number of missing values*
 
-````{r}
+
+```r
 missing_values<-sum(is.na(assignment))
 ```
 
-The code above counts the number of missing values in the data. There are a total of `r missing_values` in the data frame. All of  these values are in the **steps** variable.
+The code above counts the number of missing values in the data. There are a total of 2304 in the data frame. All of  these values are in the **steps** variable.
 
 ###*Strategy for Imputing missing values*
 
@@ -115,7 +137,8 @@ This is achieved in a few major steps, which are:
 
 A new data set **new_data** is assigned the same values as the data set **assignment**. Missing values are imputed to this data, as described above.
 
-```{r}
+
+```r
 new_data<-assignment
 
 for (row in 1:nrow(new_data)) 
@@ -139,7 +162,6 @@ for (row in 1:nrow(new_data))
     }
   }
 }
-
 ```
 
 
@@ -150,24 +172,40 @@ for (row in 1:nrow(new_data))
 Total number of steps is  calculated  the same way as it was without imputed missing values. 
 
 
-```{r}
+
+```r
 steps_total_nomissing<-aggregate(list(steps=new_data$steps), by=list(date=new_data$date),  FUN=sum, na.rm=TRUE)
 ```
 
 
 A histogram of these values shows more normal distribution. Although, the most occuring number of total steps in a day remain between 10000 to 15000. See below.
 
-```{r}
+
+```r
 hist(steps_total_nomissing$steps, col="orange", xlab="Total number of steps", main="Total number of steps per day with imputed missing values")
 ```
 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
 
 
-```{r}
+
+
+```r
 mean_nomissing=mean(steps_total_nomissing$steps)
 median_nomissing=median(steps_total_nomissing$steps)
 mean_nomissing
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median_nomissing
+```
+
+```
+## [1] 10766.19
 ```
 
 The mean and median both have a value of 10766.19. There was a higher difference between the median and the mean before imputing the missing values.
@@ -183,7 +221,8 @@ The **isWeekday** amd **isWeekend** functions are used in addtion with ** which*
 
 Once the weekend and weekday rows have been identified a new variable **day** is generated and assigned value labels. 
 
-```{r}
+
+```r
 #install.packages("timeDate")
 library("timeDate")
 
@@ -199,7 +238,6 @@ new_data$date<-as.Date(new_data$date)
   new_data$day <- factor(new_data$day,
                      levels = c(1,2),
                      labels = c("weekdays", "weekend"))
-  
 ```
 
 
@@ -208,9 +246,9 @@ new_data$date<-as.Date(new_data$date)
 A new dataframe is created with the mean number of steps for each 5 minute interval for two categories:weekday and weekend. The code below uses the **aggregate** command to calculate the mean values.
 
 
-```{r}
-steps_mean_interval_nomissing<-aggregate(steps~interval+day, data=new_data, FUN=function(x) (mean=mean(x)))
 
+```r
+steps_mean_interval_nomissing<-aggregate(steps~interval+day, data=new_data, FUN=function(x) (mean=mean(x)))
 ```
 
 The plot below shows the trend of mean number of steps for 5 minute intervals during the weekend and weekdays. 
@@ -219,14 +257,16 @@ During the initial 5 minute intervals mean number of steps is close to zero on w
 
 The mean number of steps are as high as about 206 steps on weekdays, where as in the weekends the maximum number of mean steps is abot 150 steps.
 
-```{r}
+
+```r
 library (lattice)
 
 xyplot ( steps~ interval| day,  data=steps_mean_interval_nomissing, type="l", lwd="5",layout=c(1, 2), xlab="Interval", ylab="Average Steps")
-
 ```
 
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png) 
 
-knit2html()
+
+
 
 
